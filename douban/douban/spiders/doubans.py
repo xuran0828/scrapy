@@ -3,7 +3,7 @@ import scrapy
 import time
 import json
 from scrapy import Request
-from ..items import DoubanItem
+from douban.items import *
 from urllib.parse import urlencode
 
 PAGE_COUNT=1000
@@ -25,7 +25,7 @@ class DoubanSpider(scrapy.Spider):
             data['page_start']=page*20
             params=urlencode(data)
             url=start_urls+params
-            yield Request(url,callback=self.parse)
+            yield Request(url, callback=self.parse, dont_filter=True)
     def parse(self, response):
         data_list = json.loads(response.text)
         item=DoubanItem()
