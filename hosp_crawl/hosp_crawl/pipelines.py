@@ -5,30 +5,57 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
-import pymongo
-class MongoPipeline(object):
-    def __init__(self,mongo_uri,mongo_db):
-        self.mongo_uri=mongo_uri
-        self.mongo_db=mongo_db
-
+import pymysql
+from sqlalchemy import create_engine
+class MySQLPipeline(object):
+    def __init__(self,host,port,db,user,passwd):
+        self.host=host
+        self.port=port
+        self.db=db
+        self.user=user
+        self.passwd=passwd
     @classmethod
     def from_crawler(cls,crawler):
         return cls(
-            mongo_uri=crawler.settings.get('MONGO_URI'),
-            mongo_db=crawler.settings.get('MONGO_DB'),
+            host=crawler.settings.get('MYSQL_HOST'),
+            port=crawler.settings.get('MYSQL_PORT'),
+            db=crawler.settings.get('MYSQL_DB_NAME'),
+            user=crawler.settings.get('MYSQL_USER'),
+            passwd=crawler.settings.get('MYSQL_PASSWORD')
         )
     def open_spider(self,spider):
-        #开启数据库的连接，参数spider就是被开启的Spider对象
-        self.client=pymongo.MongoClient(self.mongo_uri)
-        self.db=self.client[self.mongo_db]
-
+        self.db_conn = pymysql.connect(host=self.host, port=self.port, db=self.db, user=self.user,
+                                       passwd=self.passwd,
+                                       charset='utf8')
+        self.db_conn.ping(reconnect=True)
+        self.db_cur = self.db_conn.cursor()
+        print("数据库连接成功")
     def process_item(self, item, spider):
-        #返回item对象，此item会被低优先级的Item pipeline的方法调用，直道所有item全被调用完
-        self.db[item.collection].insert({u'医院名称': item['hosp_name'],
-                                         u'医院别名': item['hosp_alias'],
-                                         u'医院类型': item['hosp_type']
-                                         })
+        values=(
+            item['hosp_name'],
+            item.get('hosp_alias'),
+            item['hosp_type'],
+            item['hospital_level'],
+            item.get('founded_date'),
+            item['operation_way'],
+            item.get('website'),
+            item['phone'],
+            item['pr'],
+            item['city'],
+            item['addr_detail']
+        )
+        try:
+            self.db_cur.execute("""select * from hosp_rawinfos where hosp_name=%s""",item['hosp_name'])
+            sql="""insert into hosp_rawinfos(hosp_name,hosp_alias,hosp_type,hospital_level,founded_date,operation_way,website,phone ,pr,city ,addr_detail)
+            values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+            print(values)
+            self.db_cur.execute(sql,values)
+            self.db_conn.commit()
+            print("insert finished")
+        except:
+            print("insert to db failed")
+            self.db_conn.rollback()
+            self.db_conn.close()
         return item
-
     def close_spider(self,spider):
-        self.client.close()
+        self.db_conn.close()
