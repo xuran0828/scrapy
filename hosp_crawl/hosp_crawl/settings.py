@@ -14,8 +14,11 @@ BOT_NAME = 'hosp_crawl'
 SPIDER_MODULES = ['hosp_crawl.spiders']
 NEWSPIDER_MODULE = 'hosp_crawl.spiders'
 
-MONGO_URI='localhost'
-MONGO_DB='hosp_crawl'
+MYSQL_DB_NAME='dspdb_hsp_crawl'
+MYSQL_HOST='10.10.172.148'
+MYSQL_PORT=3306
+MYSQL_USER='ranxu'
+MYSQL_PASSWORD='Ran_Xu2019'
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'hosp_crawl (+http://www.yourdomain.com)'
 PROXY_URL = 'http://localhost:5555/random'
@@ -28,7 +31,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 1
+DOWNLOAD_DELAY = 4
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16
@@ -76,7 +79,7 @@ DOWNLOADER_MIDDLEWARES = {
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'hosp_crawl.items.HospCrawlItem':350,
-   'hosp_crawl.pipelines.MongoPipeline': 400,
+   'hosp_crawl.pipelines.MySQLPipeline': 400,
 
 }
 
@@ -95,8 +98,8 @@ ITEM_PIPELINES = {
 
 # Enable and configure HTTP caching (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
-#HTTPCACHE_ENABLED = True
+HTTPCACHE_ENABLED = True
 #HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
+HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
