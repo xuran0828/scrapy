@@ -16,5 +16,11 @@ class HospCrawlItem(scrapy.Item):
     hosp_name=scrapy.Field()
     hosp_alias=scrapy.Field()
     hosp_type=scrapy.Field()
-    # name_mapper['hospital_level']=scrapy.Field()
-
+    hospital_level = scrapy.Field()
+    founded_date=scrapy.Field()
+    operation_way=scrapy.Field()
+    website = scrapy.Field()
+    phone = scrapy.Field()
+    pr = scrapy.Field()
+    city = scrapy.Field()
+    addr_detail = scrapy.Field()
