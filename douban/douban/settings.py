@@ -14,8 +14,11 @@ BOT_NAME = 'douban'
 SPIDER_MODULES = ['douban.spiders']
 NEWSPIDER_MODULE = 'douban.spiders'
 
-MONGO_URI='localhost'
-MONGO_DB='douban_movie'
+MYSQL_HOST="10.10.172.148"
+MYSQL_DB="dspdb_hsp_crawl"
+MYSQL_PORT=3306
+MYSQL_USER="ranxu"
+MYSQL_PASSWD="Ran_Xu2019"
 
 
 PROXY_URL = 'http://localhost:5555/random'
