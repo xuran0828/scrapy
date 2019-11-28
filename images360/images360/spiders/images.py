@@ -14,7 +14,6 @@ class ImagesSpider(scrapy.Spider):
     def start_requests(self):
         data={
             'ch': 'photography',
-
             'listtype': 'new',
             'temp': '1',
         }
@@ -35,3 +34,20 @@ class ImagesSpider(scrapy.Spider):
             item['title']=image.get('group_title')
             item['thumb']=image.get('qhimg_url')
             yield item
+            
+            
+ 优化parse():
+    
+    def parse(self, response):
+            results = json.loads(response.text)
+            # 判断list是否在results的keys中
+            if 'list' in results.keys():
+                images = results.get('list')
+
+            # 每张图片动态赋值并生产ImageItem
+            for image in images:
+                item = ImageItem()
+                for field in item.fields:
+                    if field in image.keys():
+                        item[field] = image.get(field)
+                yield item
